@@ -2,7 +2,7 @@
 
 # About the game
 
-Endugoal is a multiplayer versus game. It's soccer like game but in 2D with side view. Player can kick, jump and move with button in the game to help them score a goal. The winning condition is the player with highest score. 
+Endugoal is a multiplayer versus game. It's soccer like game but in 2D side view. Player can kick, jump and move with button in the game to help them score a goal. The winning condition is the player with highest score. 
 
 By :  Gusti Zainokta G.B. (4210161009)
 
