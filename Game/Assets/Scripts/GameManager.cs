@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using Sepay;
+using Photon.Pun;
 
 public class GameManager : MonoBehaviour
 {
@@ -55,7 +56,7 @@ public class GameManager : MonoBehaviour
 
     private void Jump()
     {
-        if(isHost)
+        if(PhotonNetwork.IsMasterClient)
             arrayOfPlayers[0].GetComponent<Rigidbody2D>().velocity = new Vector2(arrayOfPlayers[0].GetComponent<Rigidbody2D>().velocity.x, 10);
         else
             arrayOfPlayers[1].GetComponent<Rigidbody2D>().velocity = new Vector2(arrayOfPlayers[1].GetComponent<Rigidbody2D>().velocity.x, 10);
@@ -63,7 +64,7 @@ public class GameManager : MonoBehaviour
 
     private void MovePlayer(Vector2 _velocity)
     {
-        if (isHost)
+        if (PhotonNetwork.IsMasterClient)
             arrayOfPlayers[0].GetComponent<Rigidbody2D>().velocity = new Vector2(_velocity.x, arrayOfPlayers[0].GetComponent<Rigidbody2D>().velocity.y);
         
         else
