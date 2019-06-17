@@ -1,16 +1,23 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Photon.Pun;
 using Sepay;
-using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
-    [SerializeField] GameObject[] arrayOfPlayers;
-    private int hostScore, awayScore;
-    public bool isHost = true;
+    private const float ENUM_SPEED = 4;
+
     [SerializeField] GameObject ball;
-    Button btn;
+    [SerializeField] GameObject[] arrayOfPlayers;
+
+    public Transform[] spawnPoint;
+
+    private int hostScore, awayScore;
+    //public bool isHost = true;
+    public bool gameStarted;
+
+    private float playerSpeed;
 
     public int HostScore { get => hostScore; set => hostScore = value; }
     public int AwayScore { get => awayScore; set => awayScore = value; }
@@ -18,21 +25,40 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        if (PhotonNetwork.IsMasterClient)
+        {
+            arrayOfPlayers[0] = PhotonNetwork.Instantiate(arrayOfPlayers[0].name, spawnPoint[0].position, Quaternion.identity);
+        }
+        else
+        {
+            arrayOfPlayers[1] = PhotonNetwork.Instantiate(arrayOfPlayers[1].name, spawnPoint[1].position, Quaternion.identity);
+        }
         InitPlayers();
     }
 
     private void InitPlayers()
     {
-        arrayOfPlayers[0].GetComponent<Player>().IsHostPlayer = true;
-        arrayOfPlayers[0].GetComponent<Player>().IsHost = isHost;
-        arrayOfPlayers[1].GetComponent<Player>().IsHostPlayer = false;
-        arrayOfPlayers[1].GetComponent<Player>().IsHost = isHost;
+        playerSpeed = 0;
+        //arrayOfPlayers[0].GetComponent<Player>().IsHostPlayer = true;
+        //arrayOfPlayers[0].GetComponent<Player>().IsHost = isHost;
+        //arrayOfPlayers[1].GetComponent<Player>().IsHostPlayer = false;
+        //arrayOfPlayers[1].GetComponent<Player>().IsHost = isHost;
     }
 
     // Update is called once per frame
     void Update()
     {
-        GetInput();
+        //GetInput();
+        if (gameStarted)
+        {
+            UpdatePlayer();
+        }
+        
+    }
+
+    private void UpdatePlayer()
+    {
+        MovePlayer(Vector2.right * playerSpeed);
     }
 
     private void GetInput()
@@ -55,7 +81,7 @@ public class GameManager : MonoBehaviour
 
     private void Jump()
     {
-        if(isHost)
+        if(PhotonNetwork.IsMasterClient)
             arrayOfPlayers[0].GetComponent<Rigidbody2D>().velocity = new Vector2(arrayOfPlayers[0].GetComponent<Rigidbody2D>().velocity.x, 10);
         else
             arrayOfPlayers[1].GetComponent<Rigidbody2D>().velocity = new Vector2(arrayOfPlayers[1].GetComponent<Rigidbody2D>().velocity.x, 10);
@@ -63,7 +89,7 @@ public class GameManager : MonoBehaviour
 
     private void MovePlayer(Vector2 _velocity)
     {
-        if (isHost)
+        if (PhotonNetwork.IsMasterClient)
             arrayOfPlayers[0].GetComponent<Rigidbody2D>().velocity = new Vector2(_velocity.x, arrayOfPlayers[0].GetComponent<Rigidbody2D>().velocity.y);
         
         else
@@ -84,5 +110,40 @@ public class GameManager : MonoBehaviour
             hostScore += 1;
         else
             awayScore += 1;
+    }
+
+    public void OnLeftButtonDown()
+    {
+        playerSpeed = ENUM_SPEED * -1;
+    }
+    public void OnLeftButtonUp()
+    {
+        playerSpeed = 0;
+    }
+    public void OnJumpButtonDown()
+    {
+        Jump();
+    }
+    public void OnRightButtonDown()
+    {
+        playerSpeed = ENUM_SPEED;
+    }
+    public void OnRightButtonUp()
+    {
+        playerSpeed = 0;
+    }
+    public void OnFlatKickButtonDown()
+    {
+        if (PhotonNetwork.IsMasterClient)
+            arrayOfPlayers[0].GetComponent<Player>().FlatKick();
+        else
+            arrayOfPlayers[1].GetComponent<PhotonView>().RPC("FlatKick", RpcTarget.All);
+    }
+    public void OnLobKickButtonDown()
+    {
+        if (PhotonNetwork.IsMasterClient)
+            arrayOfPlayers[0].GetComponent<Player>().LobKick();
+        else
+            arrayOfPlayers[1].GetComponent<PhotonView>().RPC("LobKick", RpcTarget.All);
     }
 }

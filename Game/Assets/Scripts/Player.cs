@@ -1,21 +1,22 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Photon.Pun;
 
 namespace Sepay
 {
     public class Player : MonoBehaviour
     {
-        private bool isHost;
-        private bool isHostPlayer;
+       
+        private bool canKick = false;
 
-        public bool IsHost { get => isHost; set => isHost = value; }
-        public bool IsHostPlayer { get => isHostPlayer; set => isHostPlayer = value; }
+        [SerializeField] GameObject ball;
+
 
         // Start is called before the first frame update
         void Start()
         {
-
+            ball = GameObject.FindGameObjectWithTag("Ball");
         }
 
         // Update is called once per frame
@@ -24,46 +25,60 @@ namespace Sepay
 
         }
 
-        private void OnTriggerStay2D(Collider2D collision)
+        private void OnTriggerEnter2D(Collider2D collision)
         {
             if (collision.gameObject.tag == "Ball")
             {
-                if (Input.GetKey(KeyCode.Z))
+                if ((PhotonNetwork.IsMasterClient) || (!PhotonNetwork.IsMasterClient))
                 {
-                    Debug.Log("Z Press and collide");
-                    if (IsHost && IsHostPlayer && collision.gameObject.transform.position.x > transform.position.x)
-                    {
-                        collision.gameObject.GetComponent<Rigidbody2D>().AddForce(new Vector2(1, 0.1f) * 500);
-                        Debug.Log("Sepak");
-                    }
-
-                    if (!IsHost && !IsHostPlayer && collision.gameObject.transform.position.x < transform.position.x)
-                    {
-                        collision.gameObject.GetComponent<Rigidbody2D>().AddForce(new Vector2(-1, 0.1f) * 500);
-                    }
-                }
-
-                if (Input.GetKey(KeyCode.X))
-                {
-                    Debug.Log("X Press and collide");
-                    if (IsHost && IsHostPlayer && collision.gameObject.transform.position.x > transform.position.x)
-                    {
-                        collision.gameObject.GetComponent<Rigidbody2D>().AddForce(new Vector2(0.5f, 1) * 500);
-                        Debug.Log("Sepak munggah");
-                    }
-
-                    if (!IsHost && !IsHostPlayer && collision.gameObject.transform.position.x < transform.position.x)
-                    {
-                        collision.gameObject.GetComponent<Rigidbody2D>().AddForce(new Vector2(-0.5f, 1) * 500);
-                    }
+                    canKick = true;
+                    Debug.Log("Can Kick = " + canKick);
                 }
             }
         }
 
-        private void OnCollisionStay2D(Collision2D collision)
+        private void OnTriggerExit2D(Collider2D collision)
         {
-            //Debug.Log(collision.gameObject.tag);
+            if (collision.gameObject.tag == "Ball")
+            {
+                canKick = false;
+                Debug.Log("Can Kick = " + canKick);
+            }
+        }
+
+        [PunRPC]
+        public void FlatKick()
+        {
+            if (canKick)
+            {
+                if (PhotonNetwork.IsMasterClient)
+                {
+                    ball.GetComponent<Rigidbody2D>().AddForce(new Vector2(1, 0.1f) * 500);
+                }
+
+                else
+                {
+                    ball.GetComponent<Rigidbody2D>().AddForce(new Vector2(-1, 0.1f) * 500);
+                }
+            }
+        }
+
+        [PunRPC]
+        public void LobKick()
+        {
+            if (canKick)
+            {
+                if (PhotonNetwork.IsMasterClient)
+                {
+                    ball.GetComponent<Rigidbody2D>().AddForce(new Vector2(0.5f, 1) * 500);
+                }
+
+                else
+                {
+                    ball.GetComponent<Rigidbody2D>().AddForce(new Vector2(-0.5f, 1) * 500);
+                }
+            }
         }
     }
-}
 
+}
