@@ -34,5 +34,6 @@ MonoBehaviour:
   - RespawnSpaceship
   - FlatKick
   - LobKick
+  - ResetPosition
   DisableAutoOpenWizard: 1
   ShowSettings: 1

@@ -7,8 +7,7 @@ namespace Sepay
 {
     public class Player : MonoBehaviour
     {
-       
-        private bool canKick = false;
+        private bool canKick = false, canJump = false;
 
         [SerializeField] GameObject ball;
 
@@ -23,6 +22,22 @@ namespace Sepay
         void Update()
         {
 
+        }
+
+        private void OnCollisionEnter2D(Collision2D collision)
+        {
+            if (collision.gameObject.tag == "Field")
+            {
+                canJump = true;
+            }
+        }
+
+        private void OnCollisionExit2D(Collision2D collision)
+        {
+            if (collision.gameObject.tag == "Field")
+            {
+                canJump = false;
+            }
         }
 
         private void OnTriggerEnter2D(Collider2D collision)
@@ -46,6 +61,12 @@ namespace Sepay
             }
         }
 
+        public void Jump()
+        {
+            if (canJump)
+                GetComponent<Rigidbody2D>().velocity = new Vector2(GetComponent<Rigidbody2D>().velocity.x, 10);
+        }
+
         [PunRPC]
         public void FlatKick()
         {
@@ -55,7 +76,6 @@ namespace Sepay
                 {
                     ball.GetComponent<Rigidbody2D>().AddForce(new Vector2(1, 0.1f) * 500);
                 }
-
                 else
                 {
                     ball.GetComponent<Rigidbody2D>().AddForce(new Vector2(-1, 0.1f) * 500);
@@ -72,7 +92,6 @@ namespace Sepay
                 {
                     ball.GetComponent<Rigidbody2D>().AddForce(new Vector2(0.5f, 1) * 500);
                 }
-
                 else
                 {
                     ball.GetComponent<Rigidbody2D>().AddForce(new Vector2(-0.5f, 1) * 500);

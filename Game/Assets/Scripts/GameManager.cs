@@ -1,8 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Photon.Pun;
 using Sepay;
+using Photon.Pun;
 
 public class GameManager : MonoBehaviour
 {
@@ -10,11 +10,10 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] GameObject ball;
     [SerializeField] GameObject[] arrayOfPlayers;
-
-    public Transform[] spawnPoint;
+    [SerializeField] GameObject[] spawnPoint;
 
     private int hostScore, awayScore;
-    //public bool isHost = true;
+    public bool isHost = true;
     public bool gameStarted;
 
     private float playerSpeed;
@@ -25,35 +24,29 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        InitPlayers();
         if (PhotonNetwork.IsMasterClient)
         {
-            arrayOfPlayers[0] = PhotonNetwork.Instantiate(arrayOfPlayers[0].name, spawnPoint[0].position, Quaternion.identity);
+            arrayOfPlayers[0] = PhotonNetwork.Instantiate(arrayOfPlayers[0].name, spawnPoint[0].transform.position, Quaternion.identity);
         }
         else
         {
-            arrayOfPlayers[1] = PhotonNetwork.Instantiate(arrayOfPlayers[1].name, spawnPoint[1].position, Quaternion.identity);
+            arrayOfPlayers[1] = PhotonNetwork.Instantiate(arrayOfPlayers[1].name, spawnPoint[1].transform.position, Quaternion.identity);
         }
-        InitPlayers();
     }
 
     private void InitPlayers()
     {
         playerSpeed = 0;
-        //arrayOfPlayers[0].GetComponent<Player>().IsHostPlayer = true;
-        //arrayOfPlayers[0].GetComponent<Player>().IsHost = isHost;
-        //arrayOfPlayers[1].GetComponent<Player>().IsHostPlayer = false;
-        //arrayOfPlayers[1].GetComponent<Player>().IsHost = isHost;
     }
 
     // Update is called once per frame
     void Update()
     {
-        //GetInput();
-        if (gameStarted)
+        if(gameStarted == true)
         {
             UpdatePlayer();
         }
-        
     }
 
     private void UpdatePlayer()
@@ -81,17 +74,16 @@ public class GameManager : MonoBehaviour
 
     private void Jump()
     {
-        if(PhotonNetwork.IsMasterClient)
-            arrayOfPlayers[0].GetComponent<Rigidbody2D>().velocity = new Vector2(arrayOfPlayers[0].GetComponent<Rigidbody2D>().velocity.x, 10);
+        if (PhotonNetwork.IsMasterClient)
+            arrayOfPlayers[0].GetComponent<Player>().Jump();
         else
-            arrayOfPlayers[1].GetComponent<Rigidbody2D>().velocity = new Vector2(arrayOfPlayers[1].GetComponent<Rigidbody2D>().velocity.x, 10);
+            arrayOfPlayers[1].GetComponent<Player>().Jump();
     }
 
     private void MovePlayer(Vector2 _velocity)
     {
         if (PhotonNetwork.IsMasterClient)
             arrayOfPlayers[0].GetComponent<Rigidbody2D>().velocity = new Vector2(_velocity.x, arrayOfPlayers[0].GetComponent<Rigidbody2D>().velocity.y);
-        
         else
             arrayOfPlayers[1].GetComponent<Rigidbody2D>().velocity = new Vector2(_velocity.x, arrayOfPlayers[1].GetComponent<Rigidbody2D>().velocity.y);
         
@@ -103,13 +95,28 @@ public class GameManager : MonoBehaviour
         ball.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
         ball.GetComponent<Rigidbody2D>().angularVelocity = 0;
 
-        arrayOfPlayers[0].transform.position = new Vector3(-5, -1.3f);
-        arrayOfPlayers[1].transform.position = new Vector3(5, -1.3f);
+        if (PhotonNetwork.IsMasterClient)
+        {
+            ResetPosition();
+            arrayOfPlayers[1].GetComponent<PhotonView>().RPC("ResetPosition", RpcTarget.All);
+        }
+        else
+        {
+            ResetPosition();
+            arrayOfPlayers[0].GetComponent<PhotonView>().RPC("ResetPosition", RpcTarget.All);
+        }
 
         if (_homeGoal)
             hostScore += 1;
         else
             awayScore += 1;
+    }
+
+    [PunRPC]
+    public void ResetPosition()
+    {
+        arrayOfPlayers[0].transform.position = new Vector3(-5, -1.3f);
+        arrayOfPlayers[1].transform.position = new Vector3(5, -1.3f);
     }
 
     public void OnLeftButtonDown()
