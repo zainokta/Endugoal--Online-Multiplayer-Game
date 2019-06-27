@@ -67,35 +67,38 @@ namespace Sepay
                 GetComponent<Rigidbody2D>().velocity = new Vector2(GetComponent<Rigidbody2D>().velocity.x, 10);
         }
 
-        [PunRPC]
         public void FlatKick()
         {
             if (canKick)
             {
-                if (PhotonNetwork.IsMasterClient)
-                {
-                    ball.GetComponent<Rigidbody2D>().AddForce(new Vector2(1, 0.1f) * 500);
-                }
-                else
-                {
-                    ball.GetComponent<Rigidbody2D>().AddForce(new Vector2(-1, 0.1f) * 500);
-                }
+                ball.GetComponent<Rigidbody2D>().AddForce(new Vector2(1, 0.1f) * 500);
             }
         }
 
         [PunRPC]
+        public void FlatKickEnemy()
+        {
+            if (canKick)
+            {
+                ball.GetComponent<Rigidbody2D>().AddForce(new Vector2(-1, 0.1f) * 500);
+            }
+        }
+
+
         public void LobKick()
         {
             if (canKick)
             {
-                if (PhotonNetwork.IsMasterClient)
-                {
-                    ball.GetComponent<Rigidbody2D>().AddForce(new Vector2(0.5f, 1) * 500);
-                }
-                else
-                {
-                    ball.GetComponent<Rigidbody2D>().AddForce(new Vector2(-0.5f, 1) * 500);
-                }
+                ball.GetComponent<Rigidbody2D>().AddForce(new Vector2(0.5f, 1) * 500);
+            }
+        }
+
+        [PunRPC]
+        public void LobKickEnemy()
+        {
+            if (canKick)
+            {
+                ball.GetComponent<Rigidbody2D>().AddForce(new Vector2(-0.5f, 1) * 500);
             }
         }
     }

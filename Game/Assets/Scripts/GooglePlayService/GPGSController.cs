@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using GooglePlayGames.BasicApi;
 using GooglePlayGames;
+using UnityEngine.UI;
 
 public class GPGSController : MonoBehaviour
 {
-    public GameObject loginBtn, achievementBtn;
+    public Button loginBtn, achievementBtn;
 
     // Start is called before the first frame update
     void Start()
@@ -30,13 +31,13 @@ public class GPGSController : MonoBehaviour
         {
             if (success == true)
             {
-                loginBtn.SetActive(false);
-                achievementBtn.SetActive(true);
+                loginBtn.interactable = false;
+                achievementBtn.interactable = true;
                 FirstLogin();
             }
             else
             {
-                achievementBtn.SetActive(false);
+                achievementBtn.interactable = false;
             }
         });
     }

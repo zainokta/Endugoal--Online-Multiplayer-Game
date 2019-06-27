@@ -8,7 +8,7 @@ PlayerSettings:
   AndroidProfiler: 0
   AndroidFilterTouchesWhenObscured: 0
   AndroidEnableSustainedPerformanceMode: 0
-  defaultScreenOrientation: 4
+  defaultScreenOrientation: 3
   targetDevice: 2
   useOnDemandResources: 0
   accelerometerFrequency: 60
@@ -245,7 +245,7 @@ PlayerSettings:
   AndroidTargetArchitectures: 5
   AndroidSplashScreenScale: 0
   androidSplashScreen: {fileID: 0}
-  AndroidKeystoreName: D:/Kuliah/Semester 6/Multiplayer Online/Endugoal--Online-Multiplayer-Game/Game/endugoal(1).keystore
+  AndroidKeystoreName: E:/Tugas/Desain Game Multiplayer Online/endugoal.keystore
   AndroidKeyaliasName: endugoal
   AndroidBuildApkPerCpuArchitecture: 0
   AndroidTVCompatibility: 1

@@ -35,5 +35,8 @@ MonoBehaviour:
   - FlatKick
   - LobKick
   - ResetPosition
+  - FlatKickEnemy
+  - LobKickEnemy
+  - ResetPositionEnemy
   DisableAutoOpenWizard: 1
   ShowSettings: 1

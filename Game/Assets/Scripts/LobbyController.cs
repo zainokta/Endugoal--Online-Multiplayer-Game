@@ -3,23 +3,24 @@ using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
 using Photon.Realtime;
+using UnityEngine.UI;
 
 public class LobbyController : MonoBehaviourPunCallbacks
 {
-    public GameObject battleButton;
+    public Button battleButton;
 
     // Start is called before the first frame update
     void Start()
     {
         PhotonNetwork.AutomaticallySyncScene = true;
-        battleButton.SetActive(false);
+        battleButton.interactable = false;
         PhotonNetwork.ConnectUsingSettings(); //Connect to Photon Server
     }
 
     public override void OnConnectedToMaster()
     {
         Debug.Log("Player Connected to Server");
-        battleButton.SetActive(true);
+        battleButton.interactable = true;
     }
 
 
@@ -34,7 +35,7 @@ public class LobbyController : MonoBehaviourPunCallbacks
     public void JoinRoom()
     {
         Debug.Log("Joining into the room...");
-        battleButton.SetActive(false);
+        battleButton.interactable = false;
 
         PhotonNetwork.JoinRandomRoom();
         Debug.Log("Timeout Started");
@@ -52,6 +53,11 @@ public class LobbyController : MonoBehaviourPunCallbacks
         StopAllCoroutines();
         Debug.Log("On room " + PhotonNetwork.CurrentRoom);
         PhotonNetwork.LoadLevel("Core");
+    }
+
+    public void QuitGame()
+    {
+        Application.Quit();
     }
 
     private void Update()

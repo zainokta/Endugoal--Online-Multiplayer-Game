@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Sepay;
 using Photon.Pun;
+using GooglePlayGames;
 
 public class GameManager : MonoBehaviour
 {
@@ -91,6 +92,7 @@ public class GameManager : MonoBehaviour
 
     public void Goal(bool _homeGoal)
     {
+        PlayGamesPlatform.Instance.ReportProgress(GPGSIds.achievement_first_goal, 100f, null);
         ball.transform.position = new Vector3(0, 3);
         ball.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
         ball.GetComponent<Rigidbody2D>().angularVelocity = 0;
@@ -98,13 +100,13 @@ public class GameManager : MonoBehaviour
         if (PhotonNetwork.IsMasterClient)
         {
             ResetPosition();
-            arrayOfPlayers[1].GetComponent<PhotonView>().RPC("ResetPosition", RpcTarget.All);
+            arrayOfPlayers[1].GetComponent<PhotonView>().RPC("ResetPositionEnemy", RpcTarget.All);
         }
         else
         {
-            ResetPosition();
-            arrayOfPlayers[0].GetComponent<PhotonView>().RPC("ResetPosition", RpcTarget.All);
+            ResetPositionEnemy();
         }
+        
 
         if (_homeGoal)
             hostScore += 1;
@@ -112,10 +114,14 @@ public class GameManager : MonoBehaviour
             awayScore += 1;
     }
 
-    [PunRPC]
     public void ResetPosition()
     {
         arrayOfPlayers[0].transform.position = new Vector3(-5, -1.3f);
+    }
+
+    [PunRPC]
+    public void ResetPositionEnemy()
+    {
         arrayOfPlayers[1].transform.position = new Vector3(5, -1.3f);
     }
 
@@ -144,13 +150,13 @@ public class GameManager : MonoBehaviour
         if (PhotonNetwork.IsMasterClient)
             arrayOfPlayers[0].GetComponent<Player>().FlatKick();
         else
-            arrayOfPlayers[1].GetComponent<PhotonView>().RPC("FlatKick", RpcTarget.All);
+            arrayOfPlayers[1].GetComponent<PhotonView>().RPC("FlatKickEnemy", RpcTarget.All);
     }
     public void OnLobKickButtonDown()
     {
         if (PhotonNetwork.IsMasterClient)
             arrayOfPlayers[0].GetComponent<Player>().LobKick();
         else
-            arrayOfPlayers[1].GetComponent<PhotonView>().RPC("LobKick", RpcTarget.All);
+            arrayOfPlayers[1].GetComponent<PhotonView>().RPC("LobKickEnemy", RpcTarget.All);
     }
 }
